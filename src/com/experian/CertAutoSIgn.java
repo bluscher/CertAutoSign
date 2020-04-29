@@ -14,9 +14,11 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.logging.Level;
 import org.apache.log4j.Logger;
 
 /**
@@ -64,15 +66,21 @@ public class CertAutoSIgn {
                 +prop.getProperty("ST")+",C="
                 +prop.getProperty("C");
         
-        Certificado cert = new Certificado();
+        StrongBox cert = new StrongBox();
         
         /* ##Test generacion 1##
         //Creo nuevo keystore con certificado inyectado
         cert.cargarKeystoreNEW(alias, bodykeystore);
         //Creo solo el certificado
         cert.saveCertAutoSign(bodykeystore);*/
+        String pwd = "Miclave.1";
+        cert.cargarKeystoreNEW(alias,pwd, bodykeystore);
         
-        cert.cargarKeystoreNEW2(alias, bodykeystore);
+        StrongBox pruebaLocal = new StrongBox(pwd, "C://test/test.jks");
+        String nomAlias = pruebaLocal.getNomFirstAlias();
+        pruebaLocal.borrarAlias(nomAlias);
+        pruebaLocal.setKey(cert.getKey(alias, pwd), nomAlias,pwd);
+        
         
         pressAnyKeyToContinue();
 }
